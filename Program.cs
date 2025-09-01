@@ -69,11 +69,11 @@ app.MapControllers();
 app.MapPost("/register", async (UserManager<IdentityUser> userManager, RegisterDto dto) =>
 {
     if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
-        return Results.BadRequest(new { error = "Email и Password обязательны." });
+        return Results.BadRequest(new { error = "Email & Password are neccessary." });
 
     var exists = await userManager.FindByEmailAsync(dto.Email);
     if (exists is not null)
-        return Results.BadRequest(new { error = "Пользователь с таким Email уже существует." });
+        return Results.BadRequest(new { error = "This Email is taken" });
 
     var user = new IdentityUser { UserName = dto.Email, Email = dto.Email };
     var result = await userManager.CreateAsync(user, dto.Password);
@@ -81,7 +81,7 @@ app.MapPost("/register", async (UserManager<IdentityUser> userManager, RegisterD
     if (!result.Succeeded)
         return Results.BadRequest(new { errors = result.Errors.Select(e => e.Description) });
 
-    return Results.Ok(new { message = "Регистрация успешна." });
+    return Results.Ok(new { message = "Registration is successful" });
 });
 
 // Логин
@@ -91,9 +91,9 @@ app.MapPost("/login", async (SignInManager<IdentityUser> signInManager, LoginDto
         dto.Email, dto.Password, dto.RememberMe, lockoutOnFailure: false);
 
     if (!result.Succeeded)
-        return Results.BadRequest(new { error = "Неверные учётные данные." });
+        return Results.BadRequest(new { error = "Wrong login data" });
 
-    return Results.Ok(new { message = "Вход выполнен." });
+    return Results.Ok(new { message = "Login success" });
 });
 
 // Текущий пользователь (требует авторизации)
@@ -109,7 +109,7 @@ app.MapGet("/me", [Authorize] async (UserManager<IdentityUser> userManager, Http
 app.MapPost("/logout", async (SignInManager<IdentityUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
-    return Results.Ok(new { message = "Вы вышли из системы." });
+    return Results.Ok(new { message = "You logged out" });
 });
 
 app.Run();
