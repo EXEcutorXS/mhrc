@@ -1,5 +1,4 @@
 using mhrc.Data;
-using mhrc.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

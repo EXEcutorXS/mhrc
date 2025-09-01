@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 
-
 public class AuthRequest
 {
     [JsonPropertyName("username")]
@@ -42,3 +41,7 @@ public class AclRequest
     [JsonPropertyName("acc")]
     public int Acc { get; set; } // 1: read, 2: write
 }
+
+public record RegisterDto(string Email, string Password);
+
+public record LoginDto(string Email, string Password, bool RememberMe);
