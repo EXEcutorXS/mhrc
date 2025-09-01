@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>MultiHot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            margin: 2rem;
+        }
+
+        h2 {
+            margin-top: 2rem;
+        }
+
+        form {
+            max-width: 420px;
+            display: grid;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .ok {
+            color: #0a7a0a;
+        }
+
+        .err {
+            color: #b00020;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>MultiHot remote control</h1>
+
+    <h2>Registration</h2>
+    <form id="regForm">
+        <input type="email" id="regEmail" placeholder="Email" required />
+        <input type="password" id="regPassword" placeholder="Password (min. 6 chars)" required />
+        <button type="submit">Register</button>
+    </form>
+    <p id="regMsg"></p>
+
+    <h2>Вход</h2>
+    <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required />
+        <input type="password" id="loginPassword" placeholder="Password" required />
+        <label><input type="checkbox" id="rememberMe" /> Remember me</label>
+        <button type="submit">Sing in</button>
+    </form>
+    <p id="loginMsg"></p>
+
+    <h2>Кто я?</h2>
+    <button id="btnMe">GET /me (cookies required)</button>
+    <pre id="meBox"></pre>
+
+    <h2>Выход</h2>
+    <button id="btnLogout">POST /logout</button>
+    <p id="logoutMsg"></p>
+
+    <script>
+        const regForm = document.getElementById('regForm');
+        const regMsg = document.getElementById('regMsg');
+        const loginForm = document.getElementById('loginForm');
+        const loginMsg = document.getElementById('loginMsg');
+        const meBox = document.getElementById('meBox');
+        const btnMe = document.getElementById('btnMe');
+        const btnLogout = document.getElementById('btnLogout');
+        const logoutMsg = document.getElementById('logoutMsg');
+
+        async function post(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // ВАЖНО: чтобы браузер посылал/получал куки
+                body: JSON.stringify(body)
+            });
+            const data = await res.json().catch(() => ({}));
+            return { ok: res.ok, data };
+        }
+
+        regForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            regMsg.textContent = '';
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const { ok, data } = await post('/register', { email, password });
+            if (ok) { regMsg.textContent = data.message || 'OK'; regMsg.className = 'ok'; regForm.reset(); }
+            else { regMsg.textContent = data.error || (data.errors || []).join(', ') || 'Ошибка'; regMsg.className = 'err'; }
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginMsg.textContent = '';
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const { ok, data } = await post('/login', { email, password, rememberMe });
+            if (ok) { loginMsg.textContent = data.message || 'Ok'; loginMsg.className = 'ok'; }
+            else { loginMsg.textContent = data.error || 'Error'; loginMsg.className = 'err'; }
+        });
+
+        btnMe.addEventListener('click', async () => {
+            meBox.textContent = '';
+            try {
+                const res = await fetch('/me', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok) meBox.textContent = JSON.stringify(data, null, 2);
+                else meBox.textContent = JSON.stringify(data, null, 2);
+            } catch {
+                meBox.textContent = 'Network error';
+            }
+        });
+
+        btnLogout.addEventListener('click', async () => {
+            const { ok, data } = await post('/logout', {});
+            logoutMsg.textContent = ok ? (data.message || 'Ok') : 'Error';
+            logoutMsg.className = ok ? 'ok' : 'err';
+        });
+    </script>
+</body>
+</html>
