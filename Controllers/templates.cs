@@ -42,6 +42,6 @@ public class AclRequest
     public int Acc { get; set; } // 1: read, 2: write
 }
 
-public record RegisterDto(string Email, string Password);
+public record RegisterDto(string Username, string Email, string Password);
 
-public record LoginDto(string Email, string Password, bool RememberMe);
+public record LoginDto(string Username, string Email, string Password, bool RememberMe);

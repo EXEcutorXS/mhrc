@@ -21,9 +21,10 @@ async function post(url, body) {
 regForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     regMsg.textContent = '';
+    const username = document.getElementById('regUsername').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
-    const { ok, data } = await post('/register', { email, password });
+    const { ok, data } = await post('/register', {username, email, password });
     if (ok) { regMsg.textContent = data.message || 'OK'; regMsg.className = 'ok'; regForm.reset(); }
     else { regMsg.textContent = data.error || (data.errors || []).join(', ') || 'Îøèáêà'; regMsg.className = 'err'; }
 });
@@ -31,10 +32,11 @@ regForm.addEventListener('submit', async (e) => {
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginMsg.textContent = '';
+    const username = document.getElementById('loginUsername').value.trim();
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     const rememberMe = document.getElementById('rememberMe').checked;
-    const { ok, data } = await post('/login', { email, password, rememberMe });
+    const { ok, data } = await post('/login', { username, email, password, rememberMe });
     if (ok) { loginMsg.textContent = data.message || 'Ok'; loginMsg.className = 'ok'; }
     else { loginMsg.textContent = data.error || 'Error'; loginMsg.className = 'err'; }
 });

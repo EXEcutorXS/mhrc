@@ -12,11 +12,10 @@ public class MosquitoAuthController : ControllerBase
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
     public MosquitoAuthController(SignInManager<IdentityUser> signInManager,
-                         UserManager<IdentityUser> userManager, ILogger<MosquitoAuthController> logger)
+                         UserManager<IdentityUser> userManager)
     {
         _signInManager = signInManager;
         _userManager = userManager;
-        _logger = logger;
     }
 
     // Endpoint для аутентификации пользователя

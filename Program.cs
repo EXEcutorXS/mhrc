@@ -69,13 +69,17 @@ app.MapControllers();
 app.MapPost("/register", async (UserManager<IdentityUser> userManager, RegisterDto dto) =>
 {
     if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
-        return Results.BadRequest(new { error = "Email & Password are neccessary." });
+        return Results.BadRequest(new { error = "User name,Email & Password are neccessary." });
 
-    var exists = await userManager.FindByEmailAsync(dto.Email);
+    var exists = await userManager.FindByNameAsync(dto.Username);
     if (exists is not null)
-        return Results.BadRequest(new { error = "This Email is taken" });
+        return Results.BadRequest(new { error = "This Username is already taken" });
 
-    var user = new IdentityUser { UserName = dto.Email, Email = dto.Email };
+    exists = await userManager.FindByEmailAsync(dto.Email);
+    if (exists is not null)
+        return Results.BadRequest(new { error = "This Email is already taken" });
+
+    var user = new IdentityUser { UserName = dto.Username, Email = dto.Email };
     var result = await userManager.CreateAsync(user, dto.Password);
 
     if (!result.Succeeded)
@@ -87,8 +91,9 @@ app.MapPost("/register", async (UserManager<IdentityUser> userManager, RegisterD
 // Логин
 app.MapPost("/login", async (SignInManager<IdentityUser> signInManager, LoginDto dto) =>
 {
+    
     var result = await signInManager.PasswordSignInAsync(
-        dto.Email, dto.Password, dto.RememberMe, lockoutOnFailure: false);
+        dto.Username, dto.Password, dto.RememberMe, lockoutOnFailure: false);
 
     if (!result.Succeeded)
         return Results.BadRequest(new { error = "Wrong login data" });
