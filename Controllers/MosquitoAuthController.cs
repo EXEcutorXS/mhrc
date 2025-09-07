@@ -58,10 +58,11 @@ public class MosquitoAuthController : ControllerBase
     [HttpPost("acl")]
     public async Task<IActionResult> CheckAcl([FromBody] AclRequest request)
     {
+        var response = new AuthResponse() { Ok = request.Topic.StartsWith(request.Username + "/") || request.Username.ToUpper() == "ADMIN", Error = "" };
         try
         {
             _logger.LogInformation($"ACL request for user: {request.Username}, topic: {request.Topic}");
-            return Ok(new { result = request.Topic.StartsWith(request.Username + "/") || request.Username.ToUpper()=="ADMIN" });
+            return Ok(response);
         }
         catch (Exception ex)
         {
