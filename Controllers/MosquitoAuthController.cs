@@ -45,9 +45,15 @@ public class MosquitoAuthController : ControllerBase
             response.Ok = (await _signInManager.CheckPasswordSignInAsync(user, request.Password, false)).Succeeded;
 
             if (response.Ok)
+            {
+                _logger.LogInformation($"User: {request.Username} accepted");
                 return Ok(response);
+            }
             else
+            {
+                _logger.LogInformation($"User: {request.Username},wrong password");
                 return StatusCode(403, new { result = false });
+            }
         }
         catch (Exception ex)
         {
@@ -66,9 +72,15 @@ public class MosquitoAuthController : ControllerBase
         {
             _logger.LogInformation($"ACL request for user: {request.Username}, topic: {request.Topic}");
             if (request.Topic.StartsWith(request.Username + "/") || request.Username.ToUpper() == "ADMIN")
+            {
+                _logger.LogInformation($"ACL success");
                 return Ok(response);
+            }
             else
+            {
+                _logger.LogInformation($"ACL declined");
                 return StatusCode(403, new { result = false });
+            }
         }
         catch (Exception ex)
         {
