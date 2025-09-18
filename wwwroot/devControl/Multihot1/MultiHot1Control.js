@@ -3,7 +3,7 @@
 // --------- CONFIG ---------
 // NOTE: Browsers cannot speak raw TCP (1883). Your broker must expose MQTT over WebSockets.
 // If this page is served via HTTPS, switch to wss:// and ensure a valid cert on the broker.
-let WS_URL = 'ws://telematic.space:8083'; // Change if your WS listener differs
+let WS_URL = 'wss://telematic.space:8084'; // Change if your WS listener differs
 let USERNAME = 'dev1';                          // (requested)
 let PASSWORD = '111111';                        // (requested)
 const DEVICE_ID = 0;

@@ -116,8 +116,8 @@ app.MapPost("/register", async (UserManager<IdentityUser> userManager, RegisterD
 app.MapPost("/login", async (SignInManager<IdentityUser> signInManager,
     UserManager<IdentityUser> userManager, IConfiguration config, LoginDto dto) =>
 {
-    var tokenCheck = dto.Password.Split('.') > 2 && dto.Password.Length > 20;
-        var result = await signInManager.PasswordSignInAsync(
+    var tokenCheck = dto.Password.Split('.').Length > 2 && dto.Password.Length > 20;
+    var result = await signInManager.PasswordSignInAsync(
         dto.Username, dto.Password, dto.RememberMe, lockoutOnFailure: false);
 
     if (!result.Succeeded)
@@ -203,4 +203,45 @@ string GenerateJwtToken(IdentityUser user, IConfiguration config)
     var tokenHandler = new JwtSecurityTokenHandler();
     var token = tokenHandler.CreateToken(tokenDescriptor);
     return tokenHandler.WriteToken(token);
+}
+
+public class JwtValidator
+{
+    public static JwtSecurityToken ValidateAndDecode(string token, string secretKey, string issuer = null, string audience = null)
+    {
+        try
+        {
+            var key = Encoding.UTF8.GetBytes(secretKey);
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+
+                // Настройте в зависимости от ваших требований:
+                ValidateIssuer = !string.IsNullOrEmpty(issuer),
+                ValidIssuer = issuer,
+
+                ValidateAudience = !string.IsNullOrEmpty(audience),
+                ValidAudience = audience,
+
+                ValidateLifetime = true, // Проверять срок действия
+                ClockSkew = TimeSpan.Zero // Нулевой допуск по времени
+            };
+
+            // Валидация токена и извлечение принципала
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+            return validatedToken as JwtSecurityToken;
+        }
+        catch (SecurityTokenValidationException ex)
+        {
+            throw new Exception($"Token validation failed: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Token processing failed: {ex.Message}");
+        }
+    }
 }
