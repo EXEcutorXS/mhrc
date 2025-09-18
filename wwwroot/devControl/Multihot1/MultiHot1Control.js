@@ -289,8 +289,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if (payload == 1) $('#buttonFurnace').classList.add('active');
     }
 
-    if (topic === getTopic('sunTemp'))
-      $('#actualDaySetpoint').textContent = payload + '°'
+      if (topic === getTopic('sunTemp')) {
+          dayPicker.setValue(payload)
+          $('#actualDaySetpoint').textContent = payload + '°'
+      }
 
     if (topic === getTopic('moonTemp'))
 	{
@@ -298,8 +300,10 @@ document.addEventListener('DOMContentLoaded', function () {
       $('#actualNightSetpoint').textContent = payload + '°'
 	}
 
-    if (topic === getTopic('paramFan'))
-      $('#actualFanSpeed').textContent = payload + '%'
+      if (topic === getTopic('paramFan')) {
+          fanPicker.setValue(payload)
+          $('#actualFanSpeed').textContent = payload + '%'
+      }
 
     if (topic === getTopic('airTemp'))
       $('#LabelCabinTemp').textContent = payload + "°C"
