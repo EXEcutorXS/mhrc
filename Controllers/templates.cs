@@ -44,6 +44,6 @@ public class AclRequest
 
 public record RegisterDto(string Username, string Email, string Password);
 
-public record LoginDto(string Username, string Email, string Password, bool RememberMe, string Token);
+public record LoginDto(string Username, string Password, bool RememberMe, string Token);
 
 public record TokenResponse (string Token, DateTime Expires);

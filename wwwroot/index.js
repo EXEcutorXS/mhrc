@@ -7,6 +7,8 @@ const btnMe = document.getElementById('btnMe');
 const btnLogout = document.getElementById('btnLogout');
 const logoutMsg = document.getElementById('logoutMsg');
 
+let token = "";
+
 async function post(url, body) {
     const res = await fetch(url, {
         method: 'POST',
@@ -33,11 +35,13 @@ loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginMsg.textContent = '';
     const username = document.getElementById('loginUsername').value.trim();
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
+    if (token == "")
+        const password = document.getElementById('loginPassword').value;
+    else
+        const password = token;
     const rememberMe = document.getElementById('rememberMe').checked;
-    const { ok, data } = await post('/login', { username, email, password, rememberMe });
-    if (ok) { loginMsg.textContent = data.message || 'Ok'; loginMsg.className = 'ok'; }
+    const { ok, data } = await post('/login', { username, password, rememberMe });
+    if (ok) { loginMsg.textContent = data.message || 'Ok'; loginMsg.className = 'ok'; token = data.token; }
     else { loginMsg.textContent = data.error || 'Error'; loginMsg.className = 'err'; }
 });
 
