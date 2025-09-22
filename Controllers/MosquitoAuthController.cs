@@ -53,7 +53,7 @@ public class MosquitoAuthController : ControllerBase
                 _logger.LogInformation($"Invalid password for user: {request.Username}");
             }
 
-            return Unauthorized(response);
+            return Ok(response);
         }
         catch (Exception ex)
         {
